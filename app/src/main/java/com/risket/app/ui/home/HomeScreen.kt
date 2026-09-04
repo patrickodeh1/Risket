@@ -113,7 +113,7 @@ private fun TableCard(table: TableEntity, onClick: () -> Unit, onDelete: () -> U
                 Spacer(Modifier.height(4.dp))
                 Text(
                     when (table.type) {
-                        TYPE_AV -> "AV table  •  initial balance ${table.initialBalance}"
+                        TYPE_AV -> "AV table  •  initial balance ${"%.0f".format(table.initialBalance)}"
                         TYPE_NOTE -> "Note"
                         else -> "Custom table"
                     },
