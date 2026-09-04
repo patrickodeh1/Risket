@@ -81,7 +81,7 @@ private fun SummaryBar(initialBalance: Double, rows: List<RowEntity>, isComplete
         Column(horizontalAlignment = Alignment.End) {
             Text("Current balance", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
-                "%.2f".format(currentBalance),
+                "%.0f".format(currentBalance),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary
@@ -124,8 +124,8 @@ private fun RowItem(row: RowEntity, onToggle: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text("${row.serialNumber}", modifier = Modifier.width(32.dp), style = MaterialTheme.typography.bodyMedium)
-        Text("%.2f".format(row.risk), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-        Text("%.2f".format(row.balance), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+        Text("%.0f".format(row.risk), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+        Text("%.0f".format(row.balance), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
         Text(
             if (row.checked) timeFormat.format(Date(row.updatedAt)) else "-",
             modifier = Modifier.weight(1f),
