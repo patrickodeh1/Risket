@@ -15,21 +15,33 @@ import kotlinx.coroutines.delay
 @Composable
 fun NoteScreen(tableId: Long, viewModel: RisketViewModel, navController: NavController) {
     val table by viewModel.tableFlow(tableId).collectAsState(initial = null)
-    var text by remember { mutableStateOf<String?>(null) }
+    var text by remember { mutableStateOf("") }
+    var loaded by remember { mutableStateOf(false) }
 
+    // Load the saved content exactly once, when the table first arrives.
     LaunchedEffect(table?.id) {
-        if (text == null) {
+        if (!loaded && table != null) {
             text = table?.noteContent ?: ""
+            loaded = true
         }
     }
 
-    // debounce save
-    LaunchedEffect(text) {
+    // Debounced autosave, only active after initial load to avoid overwriting with blank text.
+    LaunchedEffect(text, loaded) {
         val current = table
-        val value = text
-        if (current != null && value != null) {
+        if (loaded && current != null) {
             delay(500)
-            viewModel.saveNote(current, value)
+            viewModel.saveNote(current, text)
+        }
+    }
+
+    // Safety net: save immediately when leaving the screen.
+    DisposableEffect(Unit) {
+        onDispose {
+            val current = table
+            if (loaded && current != null) {
+                viewModel.saveNote(current, text)
+            }
         }
     }
 
@@ -46,7 +58,7 @@ fun NoteScreen(tableId: Long, viewModel: RisketViewModel, navController: NavCont
         }
     ) { padding ->
         OutlinedTextField(
-            value = text ?: "",
+            value = text,
             onValueChange = { text = it },
             modifier = Modifier
                 .fillMaxSize()
