@@ -1,5 +1,6 @@
 package com.risket.app.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -129,7 +130,7 @@ private fun TableCard(table: TableEntity, onClick: () -> Unit, onDelete: () -> U
 
 // small extension so we can attach a click to a Column without importing clickable at top redundantly
 private fun Modifier.clickable(onClick: () -> Unit): Modifier =
-    this.then(androidx.compose.foundation.clickable(onClick = onClick))
+    this.then(clickable(onClick = onClick))
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
