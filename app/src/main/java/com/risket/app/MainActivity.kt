@@ -103,17 +103,17 @@ fun RisketNavHost(app: RisketApp) {
             TodoScreen(tableId = tableId, viewModel = viewModel, navController = navController)
         }
         composable("create_custom") {
-            CreateCustomTableScreen(viewModel = viewModel, navController = nav_controller)
+            CreateCustomTableScreen(viewModel = viewModel, navController = navController)
         }
         composable(
             "custom_table/{tableId}",
             arguments = listOf(navArgument("tableId") { type = NavType.LongType })
         ) { backStackEntry ->
             val tableId = backStackEntry.arguments?.getLong("tableId") ?: 0L
-            CustomTableScreen(tableId = tableId, viewModel = view_model, navController = navController)
+            CustomTableScreen(tableId = tableId, viewModel = viewModel, navController = navController)
         }
         composable("settings") {
-            SettingsScreen(navController = nav_controller)
+            SettingsScreen(navController = navController)
         }
         composable("ai_planner") {
             val apiKey = SecureKeyStore.getGroqKey(context)
