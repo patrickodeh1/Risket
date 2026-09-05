@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-val MIGRATION_1_2 = object : Migration(1, 2) {
+val MIGRATION_1_3 = object : Migration(1, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE todo_items ADD COLUMN createdDate TEXT NOT NULL DEFAULT ''")
         db.execSQL(
@@ -22,6 +22,16 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
             )
             """.trimIndent()
         )
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS chat_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                role TEXT NOT NULL,
+                content TEXT NOT NULL,
+                timestamp INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
     }
 }
 
@@ -32,9 +42,10 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         CustomColumnEntity::class,
         CustomCellEntity::class,
         TodoItemEntity::class,
-        GoalEntity::class
+        GoalEntity::class,
+        ChatMessageEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class RisketDatabase : RoomDatabase() {
@@ -50,7 +61,7 @@ abstract class RisketDatabase : RoomDatabase() {
                     context.applicationContext,
                     RisketDatabase::class.java,
                     "risket.db"
-                ).addMigrations(MIGRATION_1_2).build()
+                ).addMigrations(MIGRATION_1_3).build()
                 INSTANCE = instance
                 instance
             }
