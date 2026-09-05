@@ -28,5 +28,15 @@ abstract class RisketDatabase : RoomDatabase() {
                 instance
             }
         }
+
+        /**
+         * Close the database and clear the singleton instance. Used before overwriting the DB file.
+         */
+        fun closeInstance() {
+            synchronized(this) {
+                INSTANCE?.close()
+                INSTANCE = null
+            }
+        }
     }
 }
