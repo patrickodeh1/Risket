@@ -62,6 +62,10 @@ interface RisketDao {
     @Query("SELECT * FROM todo_items WHERE tableId = :tableId ORDER BY position ASC")
     fun getTodoItemsForTable(tableId: Long): Flow<List<TodoItemEntity>>
 
+    // helper to read sync list when needed
+    @Query("SELECT * FROM todo_items WHERE tableId = :tableId ORDER BY position ASC")
+    suspend fun getTodoItems(tableId: Long): List<TodoItemEntity>
+
     @Insert
     suspend fun insertTodoItem(item: TodoItemEntity): Long
 
@@ -73,4 +77,14 @@ interface RisketDao {
 
     @Query("DELETE FROM todo_items WHERE tableId = :tableId")
     suspend fun deleteTodoItemsForTable(tableId: Long)
+
+    // Goals DAO
+    @Query("SELECT * FROM goals WHERE isActive = 1 ORDER BY createdAt ASC")
+    fun getActiveGoals(): Flow<List<GoalEntity>>
+
+    @Insert
+    suspend fun insertGoal(goal: GoalEntity): Long
+
+    @Update
+    suspend fun updateGoal(goal: GoalEntity)
 }

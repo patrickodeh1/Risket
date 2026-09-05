@@ -6,10 +6,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,7 +33,9 @@ fun HomeScreen(
     viewModel: RisketViewModel,
     navController: NavController,
     onExport: () -> Unit,
-    onImport: () -> Unit
+    onImport: () -> Unit,
+    onOpenPlanner: () -> Unit,
+    onOpenSettings: () -> Unit
 ) {
     val tables by viewModel.tables.collectAsState(initial = emptyList())
     var showCreateMenu by remember { mutableStateOf(false) }
@@ -41,11 +45,17 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("Risket", fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = onOpenPlanner) {
+                        Icon(Icons.Default.AutoAwesome, contentDescription = "AI Planner")
+                    }
                     IconButton(onClick = onExport) {
                         Icon(Icons.Default.Upload, contentDescription = "Backup")
                     }
                     IconButton(onClick = onImport) {
                         Icon(Icons.Default.Download, contentDescription = "Restore")
+                    }
+                    IconButton(onClick = onOpenSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 }
             )

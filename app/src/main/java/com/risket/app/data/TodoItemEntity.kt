@@ -9,5 +9,6 @@ data class TodoItemEntity(
     val tableId: Long,
     val text: String,
     val checked: Boolean = false,
-    val position: Int
+    val position: Int,
+    val createdDate: String = ""
 )
