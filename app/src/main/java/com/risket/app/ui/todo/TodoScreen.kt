@@ -61,7 +61,7 @@ fun TodoScreen(tableId: Long, viewModel: RisketViewModel, navController: NavCont
             }
 
             LazyColumn(modifier = Modifier.weight(1f)) {
-                items(items, key = { it.id }) { item ->
+                items(items, key = { item -> item.id }) { item ->
                     TodoRow(
                         item = item,
                         onToggle = { viewModel.toggleTodoItem(item) },
