@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -15,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.risket.app.data.BackupHelper
+import com.risket.app.data.SecureKeyStore
 import com.risket.app.ui.RisketViewModel
 import com.risket.app.ui.RisketViewModelFactory
 import com.risket.app.ui.av.AvTableScreen
@@ -23,6 +25,8 @@ import com.risket.app.ui.customtable.CreateCustomTableScreen
 import com.risket.app.ui.customtable.CustomTableScreen
 import com.risket.app.ui.home.HomeScreen
 import com.risket.app.ui.notes.NoteScreen
+import com.risket.app.ui.planner.PlannerScreen
+import com.risket.app.ui.settings.SettingsScreen
 import com.risket.app.ui.theme.RisketTheme
 import com.risket.app.ui.todo.TodoScreen
 
@@ -69,7 +73,9 @@ fun RisketNavHost(app: RisketApp) {
                 viewModel = viewModel,
                 navController = navController,
                 onExport = { exportLauncher.launch("risket-backup.db") },
-                onImport = { importLauncher.launch(arrayOf("application/octet-stream", "*/*")) }
+                onImport = { importLauncher.launch(arrayOf("application/octet-stream", "*/*")) },
+                onOpenPlanner = { navController.navigate("ai_planner") },
+                onOpenSettings = { navController.navigate("settings") }
             )
         }
         composable("create_av") {
@@ -97,14 +103,29 @@ fun RisketNavHost(app: RisketApp) {
             TodoScreen(tableId = tableId, viewModel = viewModel, navController = navController)
         }
         composable("create_custom") {
-            CreateCustomTableScreen(viewModel = viewModel, navController = navController)
+            CreateCustomTableScreen(viewModel = viewModel, navController = nav_controller)
         }
         composable(
             "custom_table/{tableId}",
             arguments = listOf(navArgument("tableId") { type = NavType.LongType })
         ) { backStackEntry ->
             val tableId = backStackEntry.arguments?.getLong("tableId") ?: 0L
-            CustomTableScreen(tableId = tableId, viewModel = viewModel, navController = navController)
+            CustomTableScreen(tableId = tableId, viewModel = view_model, navController = navController)
+        }
+        composable("settings") {
+            SettingsScreen(navController = nav_controller)
+        }
+        composable("ai_planner") {
+            val apiKey = SecureKeyStore.getGroqKey(context)
+            if (apiKey.isNullOrBlank()) {
+                LaunchedEffect(Unit) {
+                    navController.navigate("settings") {
+                        popUpTo("ai_planner") { inclusive = true }
+                    }
+                }
+            } else {
+                PlannerScreen(repository = app.repository, apiKey = apiKey, navController = navController)
+            }
         }
     }
 }

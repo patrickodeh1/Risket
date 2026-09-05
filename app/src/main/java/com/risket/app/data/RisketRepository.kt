@@ -21,8 +21,9 @@ class RisketRepository(private val dao: RisketDao) {
     fun getTodoItems(tableId: Long): Flow<List<TodoItemEntity>> = dao.getTodoItemsForTable(tableId)
 
     suspend fun addTodoItem(tableId: Long, text: String, position: Int) {
-        val item = TodoItemEntity(tableId = tableId, text = text, position = position)
-        dao.insertTodoItem(item)
+        dao.insertTodoItem(
+            TodoItemEntity(tableId = tableId, text = text, position = position, createdDate = todayString())
+        )
     }
 
     suspend fun toggleTodoItem(item: TodoItemEntity) {
@@ -105,10 +106,41 @@ class RisketRepository(private val dao: RisketDao) {
         }
     }
 
-    // New: rename, todo creation and custom row helpers
-    suspend fun renameTable(table: TableEntity, newName: String) {
-        dao.updateTable(table.copy(name = newName))
+    // Goal helpers
+    fun getActiveGoals(): Flow<List<GoalEntity>> = dao.getActiveGoals()
+
+    suspend fun createGoal(title: String, initialContext: String): GoalEntity {
+        val tableId = createTodoTable(title)
+        val goal = GoalEntity(title = title, context = initialContext, linkedTableId = tableId)
+        val goalId = dao.insertGoal(goal)
+        return goal.copy(id = goalId)
     }
+
+    suspend fun appendGoalContext(goal: GoalEntity, note: String) {
+        if (note.isBlank()) return
+        val updated = goal.copy(context = (goal.context + "\n" + note).trim())
+        dao.updateGoal(updated)
+    }
+
+    suspend fun addTasksToGoal(goal: GoalEntity, tasks: List<String>) {
+        if (tasks.isEmpty()) return
+        val today = todayString()
+        val currentItems = dao.getTodoItems(goal.linkedTableId)
+        val startPosition = currentItems.size
+        tasks.forEachIndexed { index, taskText ->
+            dao.insertTodoItem(
+                TodoItemEntity(
+                    tableId = goal.linkedTableId,
+                    text = taskText,
+                    position = startPosition + index,
+                    createdDate = today
+                )
+            )
+        }
+    }
+
+    fun todayString(): String =
+        java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
 
     suspend fun createTodoTable(name: String): Long {
         val table = TableEntity(name = name, type = TYPE_TODO)
@@ -120,6 +152,10 @@ class RisketRepository(private val dao: RisketDao) {
             CustomCellEntity(tableId = tableId, rowIndex = currentRowCount, columnId = col.id)
         }
         dao.insertCells(newCells)
+    }
+
+    suspend fun renameTable(table: TableEntity, newName: String) {
+        dao.updateTable(table.copy(name = newName))
     }
 
     suspend fun deleteTable(table: TableEntity) {
