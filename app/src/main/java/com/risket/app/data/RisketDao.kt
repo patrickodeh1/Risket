@@ -57,4 +57,17 @@ interface RisketDao {
 
     @Query("SELECT * FROM custom_cells WHERE tableId = :tableId")
     fun getCellsForTable(tableId: Long): Flow<List<CustomCellEntity>>
+
+    // Todo items DAO
+    @Query("SELECT * FROM todo_items WHERE tableId = :tableId ORDER BY position ASC")
+    fun getTodoItemsForTable(tableId: Long): Flow<List<TodoItemEntity>>
+
+    @Insert
+    suspend fun insertTodoItem(item: TodoItemEntity): Long
+
+    @Update
+    suspend fun updateTodoItem(item: TodoItemEntity)
+
+    @Delete
+    suspend fun deleteTodoItem(item: TodoItemEntity)
 }
