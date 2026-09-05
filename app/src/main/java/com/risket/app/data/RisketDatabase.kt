@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [TableEntity::class, RowEntity::class, CustomColumnEntity::class, CustomCellEntity::class],
+    entities = [TableEntity::class, RowEntity::class, CustomColumnEntity::class, CustomCellEntity::class, TodoItemEntity::class],
     version = 1,
     exportSchema = false
 )
