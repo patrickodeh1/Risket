@@ -102,6 +102,14 @@ fun CustomTableScreen(tableId: Long, viewModel: RisketViewModel, navController: 
                     Divider()
                 }
             }
+
+            // Add row button
+            Button(
+                onClick = { viewModel.addCustomRow(tableId, columns, rowCount) },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Text("Add row")
+            }
         }
     }
 }

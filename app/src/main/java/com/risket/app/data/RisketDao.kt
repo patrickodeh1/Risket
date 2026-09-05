@@ -70,4 +70,7 @@ interface RisketDao {
 
     @Delete
     suspend fun deleteTodoItem(item: TodoItemEntity)
+
+    @Query("DELETE FROM todo_items WHERE tableId = :tableId")
+    suspend fun deleteTodoItemsForTable(tableId: Long)
 }

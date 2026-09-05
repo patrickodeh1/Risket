@@ -95,4 +95,24 @@ class RisketViewModel(private val repository: RisketRepository) : ViewModel() {
             repository.deleteTable(table)
         }
     }
+
+    // New view model helpers
+    fun renameTable(table: TableEntity, newName: String) {
+        viewModelScope.launch {
+            repository.renameTable(table, newName)
+        }
+    }
+
+    fun createTodoTable(name: String, onCreated: (Long) -> Unit) {
+        viewModelScope.launch {
+            val id = repository.createTodoTable(name)
+            onCreated(id)
+        }
+    }
+
+    fun addCustomRow(tableId: Long, columns: List<CustomColumnEntity>, currentRowCount: Int) {
+        viewModelScope.launch {
+            repository.addCustomRow(tableId, columns, currentRowCount)
+        }
+    }
 }

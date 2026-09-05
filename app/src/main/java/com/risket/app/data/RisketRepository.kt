@@ -105,10 +105,28 @@ class RisketRepository(private val dao: RisketDao) {
         }
     }
 
+    // New: rename, todo creation and custom row helpers
+    suspend fun renameTable(table: TableEntity, newName: String) {
+        dao.updateTable(table.copy(name = newName))
+    }
+
+    suspend fun createTodoTable(name: String): Long {
+        val table = TableEntity(name = name, type = TYPE_TODO)
+        return dao.insertTable(table)
+    }
+
+    suspend fun addCustomRow(tableId: Long, columns: List<CustomColumnEntity>, currentRowCount: Int) {
+        val newCells = columns.map { col ->
+            CustomCellEntity(tableId = tableId, rowIndex = currentRowCount, columnId = col.id)
+        }
+        dao.insertCells(newCells)
+    }
+
     suspend fun deleteTable(table: TableEntity) {
         dao.deleteRowsForTable(table.id)
         dao.deleteColumnsForTable(table.id)
         dao.deleteCellsForTable(table.id)
+        dao.deleteTodoItemsForTable(table.id)
         dao.deleteTable(table)
     }
 }
