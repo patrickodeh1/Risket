@@ -7,7 +7,9 @@ import com.risket.app.data.CustomColumnEntity
 import com.risket.app.data.RisketRepository
 import com.risket.app.data.RowEntity
 import com.risket.app.data.TableEntity
+import com.risket.app.data.TodoItemEntity
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 
 class RisketViewModel(private val repository: RisketRepository) : ViewModel() {
 
@@ -17,6 +19,27 @@ class RisketViewModel(private val repository: RisketRepository) : ViewModel() {
     fun rowsFlow(id: Long) = repository.getRows(id)
     fun columnsFlow(id: Long) = repository.getColumns(id)
     fun cellsFlow(id: Long) = repository.getCells(id)
+
+    // Todo-related helpers
+    fun todoItemsFlow(tableId: Long): Flow<List<TodoItemEntity>> = repository.getTodoItems(tableId)
+
+    fun addTodoItem(tableId: Long, text: String, position: Int) {
+        viewModelScope.launch {
+            repository.addTodoItem(tableId, text, position)
+        }
+    }
+
+    fun toggleTodoItem(item: TodoItemEntity) {
+        viewModelScope.launch {
+            repository.toggleTodoItem(item)
+        }
+    }
+
+    fun deleteTodoItem(item: TodoItemEntity) {
+        viewModelScope.launch {
+            repository.deleteTodoItem(item)
+        }
+    }
 
     fun createAvTable(name: String, initialBalance: Double, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
