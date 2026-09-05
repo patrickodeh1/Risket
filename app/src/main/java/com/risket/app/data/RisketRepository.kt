@@ -17,6 +17,22 @@ class RisketRepository(private val dao: RisketDao) {
 
     fun getCells(tableId: Long): Flow<List<CustomCellEntity>> = dao.getCellsForTable(tableId)
 
+    // Todo-related repository helpers
+    fun getTodoItems(tableId: Long): Flow<List<TodoItemEntity>> = dao.getTodoItemsForTable(tableId)
+
+    suspend fun addTodoItem(tableId: Long, text: String, position: Int) {
+        val item = TodoItemEntity(tableId = tableId, text = text, position = position)
+        dao.insertTodoItem(item)
+    }
+
+    suspend fun toggleTodoItem(item: TodoItemEntity) {
+        dao.updateTodoItem(item.copy(checked = !item.checked))
+    }
+
+    suspend fun deleteTodoItem(item: TodoItemEntity) {
+        dao.deleteTodoItem(item)
+    }
+
     suspend fun createAvTable(name: String, initialBalance: Double): Long {
         val table = TableEntity(name = name, type = TYPE_AV, initialBalance = initialBalance)
         val tableId = dao.insertTable(table)
