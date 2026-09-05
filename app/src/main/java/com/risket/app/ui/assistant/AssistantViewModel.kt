@@ -66,7 +66,7 @@ class AssistantViewModel(
                 listOf(GroqMessage("user", "Run today's check-in."))
             }
 
-            val json = GroqClient.chat(apiKey, model, systemPrompt, groqMessages)
+            val json = GroqClient.chat(apiKey, systemPrompt, groqMessages, model)
             val parsed = parseAssistantResponse(json)
 
             repository.addChatMessage("assistant", parsed.reply)
