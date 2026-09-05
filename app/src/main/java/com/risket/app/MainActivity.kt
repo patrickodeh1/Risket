@@ -27,6 +27,7 @@ import com.risket.app.ui.home.HomeScreen
 import com.risket.app.ui.notes.NoteScreen
 import com.risket.app.ui.planner.PlannerScreen
 import com.risket.app.ui.settings.SettingsScreen
+import com.risket.app.ui.assistant.AssistantScreen
 import com.risket.app.ui.theme.RisketTheme
 import com.risket.app.ui.todo.TodoScreen
 
@@ -74,7 +75,7 @@ fun RisketNavHost(app: RisketApp) {
                 navController = navController,
                 onExport = { exportLauncher.launch("risket-backup.db") },
                 onImport = { importLauncher.launch(arrayOf("application/octet-stream", "*/*")) },
-                onOpenPlanner = { navController.navigate("ai_planner") },
+                onOpenPlanner = { navController.navigate("assistant") },
                 onOpenSettings = { navController.navigate("settings") }
             )
         }
@@ -115,16 +116,17 @@ fun RisketNavHost(app: RisketApp) {
         composable("settings") {
             SettingsScreen(navController = navController)
         }
-        composable("ai_planner") {
+        composable("assistant") {
             val apiKey = SecureKeyStore.getGroqKey(context)
             if (apiKey.isNullOrBlank()) {
                 LaunchedEffect(Unit) {
                     navController.navigate("settings") {
-                        popUpTo("ai_planner") { inclusive = true }
+                        popUpTo("assistant") { inclusive = true }
                     }
                 }
             } else {
-                PlannerScreen(repository = app.repository, apiKey = apiKey, navController = navController)
+                val model = SecureKeyStore.getModel(context)
+                AssistantScreen(repository = app.repository, apiKey = apiKey, model = model, navController = navController)
             }
         }
     }

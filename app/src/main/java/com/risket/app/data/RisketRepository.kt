@@ -139,6 +139,12 @@ class RisketRepository(private val dao: RisketDao) {
         }
     }
 
+    // Chat messages
+    fun getChatMessages(): Flow<List<ChatMessageEntity>> = dao.getAllChatMessages()
+
+    suspend fun addChatMessage(role: String, content: String): Long =
+        dao.insertChatMessage(ChatMessageEntity(role = role, content = content))
+
     fun todayString(): String =
         java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
 

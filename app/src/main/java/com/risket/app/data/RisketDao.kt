@@ -87,4 +87,11 @@ interface RisketDao {
 
     @Update
     suspend fun updateGoal(goal: GoalEntity)
+
+    // Chat messages DAO
+    @Query("SELECT * FROM chat_messages ORDER BY id ASC")
+    fun getAllChatMessages(): Flow<List<ChatMessageEntity>>
+
+    @Insert
+    suspend fun insertChatMessage(message: ChatMessageEntity): Long
 }
