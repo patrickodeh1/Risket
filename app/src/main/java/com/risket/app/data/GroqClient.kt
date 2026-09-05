@@ -15,11 +15,13 @@ object GroqClient {
     private const val ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
     private val client = OkHttpClient()
 
+    // Keep a default model but make it an optional parameter so callers that pass
+    // (apiKey, systemPrompt, messages) keep working.
     suspend fun chat(
         apiKey: String,
-        model: String,
         systemPrompt: String,
-        messages: List<GroqMessage>
+        messages: List<GroqMessage>,
+        model: String = "gpt-4o-mini"
     ): String = withContext(Dispatchers.IO) {
         val messagesArray = JSONArray()
         messagesArray.put(JSONObject().put("role", "system").put("content", systemPrompt))
