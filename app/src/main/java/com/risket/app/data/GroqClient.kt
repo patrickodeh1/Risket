@@ -17,11 +17,16 @@ object GroqClient {
 
     // Keep a default model but make it an optional parameter so callers that pass
     // (apiKey, systemPrompt, messages) keep working.
+    // Added `requireJson` to allow callers to request a plain-text response when
+    // the model is struggling to strictly produce JSON. When true (default), the
+    // request asks the model to return a JSON object; when false we omit the
+    // `response_format` field so the model may respond in free text.
     suspend fun chat(
         apiKey: String,
         systemPrompt: String,
         messages: List<GroqMessage>,
-        model: String = "gpt-4o-mini"
+        model: String = "gpt-4o-mini",
+        requireJson: Boolean = true
     ): String = withContext(Dispatchers.IO) {
         val messagesArray = JSONArray()
         messagesArray.put(JSONObject().put("role", "system").put("content", systemPrompt))
@@ -32,8 +37,11 @@ object GroqClient {
         val body = JSONObject()
             .put("model", model)
             .put("messages", messagesArray)
-            .put("response_format", JSONObject().put("type", "json_object"))
             .put("temperature", 0.4)
+
+        if (requireJson) {
+            body.put("response_format", JSONObject().put("type", "json_object"))
+        }
 
         val request = Request.Builder()
             .url(ENDPOINT)
