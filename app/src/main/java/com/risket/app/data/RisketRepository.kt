@@ -87,6 +87,18 @@ class RisketRepository(private val dao: RisketDao) {
         dao.insertCells(cells)
     }
 
+    suspend fun addCustomColumn(tableId: Long, name: String, position: Int, currentRowCount: Int) {
+        val columnId = dao.insertColumn(
+            CustomColumnEntity(tableId = tableId, name = name, position = position)
+        )
+        val cells = (0 until currentRowCount).map { rowIndex ->
+            CustomCellEntity(tableId = tableId, rowIndex = rowIndex, columnId = columnId)
+        }
+        if (cells.isNotEmpty()) {
+            dao.insertCells(cells)
+        }
+    }
+
     suspend fun updateCell(cell: CustomCellEntity, newValue: String) {
         dao.updateCell(cell.copy(value = newValue))
     }

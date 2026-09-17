@@ -53,62 +53,87 @@ fun CustomTableScreen(tableId: Long, viewModel: RisketViewModel, navController: 
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .horizontalScroll(scrollState)
         ) {
-            Row {
-                Text(
-                    "#",
-                    modifier = Modifier.width(40.dp).padding(8.dp),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                columns.forEach { col ->
+            // Only the table scrolls. The controls remain pinned at the bottom.
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .horizontalScroll(scrollState)
+            ) {
+                Row {
                     Text(
-                        col.name,
-                        modifier = Modifier.width(cellWidth).padding(8.dp),
+                        "#",
+                        modifier = Modifier.width(40.dp).padding(8.dp),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold
                     )
-                }
-            }
-            Divider()
-
-            LazyColumn {
-                items(rowCount) { rowIndex ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    columns.forEach { col ->
                         Text(
-                            "${rowIndex + 1}",
-                            modifier = Modifier.width(40.dp).padding(8.dp),
-                            style = MaterialTheme.typography.bodyMedium
+                            col.name,
+                            modifier = Modifier.width(cellWidth).padding(8.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold
                         )
-                        columns.forEach { col ->
-                            val cell = cells.firstOrNull { it.rowIndex == rowIndex && it.columnId == col.id }
-                            if (cell != null) {
-                                var value by remember(cell.id) { mutableStateOf(cell.value) }
-                                OutlinedTextField(
-                                    value = value,
-                                    onValueChange = {
-                                        value = it
-                                        viewModel.updateCell(cell, it)
-                                    },
-                                    modifier = Modifier.width(cellWidth).padding(4.dp),
-                                    singleLine = true
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.width(cellWidth))
+                    }
+                }
+                Divider()
+
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    items(rowCount) { rowIndex ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "${rowIndex + 1}",
+                                modifier = Modifier.width(40.dp).padding(8.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            columns.forEach { col ->
+                                val cell = cells.firstOrNull { it.rowIndex == rowIndex && it.columnId == col.id }
+                                if (cell != null) {
+                                    var value by remember(cell.id) { mutableStateOf(cell.value) }
+                                    OutlinedTextField(
+                                        value = value,
+                                        onValueChange = {
+                                            value = it
+                                            viewModel.updateCell(cell, it)
+                                        },
+                                        modifier = Modifier.width(cellWidth).padding(4.dp),
+                                        singleLine = true
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.width(cellWidth))
+                                }
                             }
                         }
+                        Divider()
                     }
-                    Divider()
                 }
             }
 
-            // Add row button
-            Button(
-                onClick = { viewModel.addCustomRow(tableId, columns, rowCount) },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Add row")
+                OutlinedButton(
+                    onClick = {
+                        viewModel.addCustomColumn(
+                            tableId = tableId,
+                            name = "Column ${columns.size + 1}",
+                            position = columns.size,
+                            currentRowCount = rowCount
+                        )
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Add column")
+                }
+                Button(
+                    onClick = { viewModel.addCustomRow(tableId, columns, rowCount) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Add row")
+                }
             }
         }
     }

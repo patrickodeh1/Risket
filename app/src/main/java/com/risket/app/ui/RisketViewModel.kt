@@ -82,6 +82,12 @@ class RisketViewModel(private val repository: RisketRepository) : ViewModel() {
         }
     }
 
+    fun addCustomColumn(tableId: Long, name: String, position: Int, currentRowCount: Int) {
+        viewModelScope.launch {
+            repository.addCustomColumn(tableId, name, position, currentRowCount)
+        }
+    }
+
     fun toggleRow(row: RowEntity, allRows: List<RowEntity>, table: TableEntity) {
         viewModelScope.launch {
             repository.toggleRowChecked(row)

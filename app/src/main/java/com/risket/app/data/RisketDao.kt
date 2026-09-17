@@ -46,6 +46,9 @@ interface RisketDao {
     @Insert
     suspend fun insertColumns(columns: List<CustomColumnEntity>)
 
+    @Insert
+    suspend fun insertColumn(column: CustomColumnEntity): Long
+
     @Query("SELECT * FROM custom_columns WHERE tableId = :tableId ORDER BY position ASC")
     fun getColumnsForTable(tableId: Long): Flow<List<CustomColumnEntity>>
 
